@@ -1,11 +1,16 @@
 import requests
+from bs4 import BeautifulSoup
 
 print("Input the URL:")
-input_ = input("> ")
-r = requests.get(input_)
+headers = {'Accept-Language': 'en-US,en;q=0.5'}
+req = requests.get(input("> "), headers=headers)
+soup = BeautifulSoup(req.content, "html.parser")
 print()
+movies = {}
 
-if r.status_code == 200 and "content" in r.json():
-    print(r.json()["content"])
-else:
-    print("Invalid quote resource!")
+try:
+    movies["title"] = soup.find("h1").text
+    movies["description"] = soup.find("div", {"class": "summary_text"}).text.strip()
+    print(movies)
+except (ValueError, Exception):
+    print("Invalid movie page!")
